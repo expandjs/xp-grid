@@ -1,7 +1,7 @@
 {
   "name": "xp-grid",
   "license": "BSD-3-Clause",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "This element is used to display a fixed or flexible grid to design your application on.",
   "homepage": "http://www.expandjs.com/elements/xp-grid",
   "authors": [
