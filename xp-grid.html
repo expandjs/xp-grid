@@ -1,0 +1,148 @@
+<!--
+@license
+Copyright (c) 2015 The ExpandJS authors. All rights reserved.
+This code may only be used under the BSD style license found at https://expandjs.github.io/LICENSE.txt
+The complete set of authors may be found at https://expandjs.github.io/AUTHORS.txt
+The complete set of contributors may be found at https://expandjs.github.io/CONTRIBUTORS.txt
+-->
+
+<!--
+This element is used to display a fixed or flexible grid to design your application on.
+
+@element xp-grid
+@description A custom element used to display a fixed or flexible grid to design your application on
+@keywords web app, html5, expandjs, web-components
+@group development
+@homepage http://expandjs.com/elements/xp-grid
+
+@dependency polymer Polymer/polymer
+@dependency expandjs ExpandJS/expandjs
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../expandjs/expandjs.html">
+
+<dom-module id="xp-grid">
+
+    <style>
+        :host {
+            display: block;
+            opacity: 0.2;
+            overflow: visible;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        :host #xpGridWrapper {
+            height: 100%;
+            margin: auto;
+        }
+
+        :host [column] {
+            background: hsla(0, 100%, 50%, 1);
+            height: 100%;
+            float: left;
+        }
+
+        :host [grid="960-12"],
+        :host [grid="960-16"] {
+            background: hsla(0, 100%, 50%, 0.5);
+            width: 960px;
+        }
+
+        :host [grid="960-12"] [column] {
+            margin: 0 10px;
+            width: 60px;
+        }
+
+        :host [grid="960-16"] [column] {
+            margin: 0 10px;
+            width: 40px;
+        }
+
+        :host [grid="bootstrap-12"],
+        :host [grid="fluid-12"],
+        :host [grid="fluid-16"] {
+            background: hsla(0, 100%, 50%, 0.5);
+        }
+
+        :host [grid="bootstrap-12"] [column] {
+            margin: 0 15px;
+            width: calc(8.333% - 30px);
+        }
+
+        :host [grid="fluid-12"] [column] {
+            width: calc(8.333333333% - 1.66%);
+            margin: 0 0.83%;
+        }
+
+        :host [grid="fluid-16"] [column] {
+            width: calc(6.25% - 1.250%);
+            margin: 0 0.625%;
+        }
+
+        :host [grid="google"] {
+            background: url('grid.png') repeat;
+        }
+    </style>
+
+    <template>
+        <div id="xpGridWrapper" grid$="[[type]]"></div>
+    </template>
+
+    <script>
+        Polymer({
+
+            // ELEMENT
+            is: 'xp-grid',
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The grid's type.
+                 *
+                 * `"960-12"` creates a 960px grid with 12 columns;
+                 *
+                 * `"960-16"` creates a 960px grid with 16 columns;
+                 *
+                 * `"bootstrap-12"` creates a bootstrap like grid with 12 columns;
+                 *
+                 * `"fluid-12"` creates a full screen grid with 12 columns;
+                 *
+                 * `"fluid-16"` creates a full screen grid with 16 columns;
+                 *
+                 * `"google"` creates a full screen grid with divided in 4 and 8px squares;
+                 *
+                 * @attribute type
+                 * @type "960-12" | "960-16" | "bootstrap-12" | "fluid-12" | "fluid-16" | "google"
+                 * @default "google"
+                 */
+                type: {
+                    observer: '_typeChanged',
+                    reflectToAttribute: true,
+                    type: String,
+                    value: 'google'
+                }
+            },
+
+            /*********************************************************************/
+
+            // OBSERVER
+            _typeChanged: function() {
+
+                // Vars
+                var self    = this,
+                    columns = XP.flush(Polymer.dom(self.$.xpGridWrapper)),
+                    length  = XP.toNumber(self.type.slice(-2));
+
+                // Appending
+                do { XP.appendChild(columns, XP.createElement('div', {attributes: {column: true}})); } while (length -= 1);
+            }
+        });
+    </script>
+
+</dom-module>
