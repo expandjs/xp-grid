@@ -140,7 +140,7 @@ This element is used to display a fixed or flexible grid to design your applicat
                     length  = XP.toNumber(self.type.slice(-2));
 
                 // Appending
-                do { XP.appendChild(columns, XP.createElement('div', {attributes: {column: true}})); } while (length -= 1);
+                do { columns.appendChild(XP.createElement('div', {attributes: {column: true}})); } while (length -= 1);
             }
         });
     </script>
