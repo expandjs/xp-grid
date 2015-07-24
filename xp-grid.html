@@ -16,22 +16,23 @@ This element is used to display a fixed or flexible grid to design your applicat
 @homepage http://expandjs.com/elements/xp-grid
 
 @dependency polymer Polymer/polymer#^1.0.0
-@dependency expandjs ExpandJS/expandjs#0.9.4
+@dependency expandjs ExpandJS/expandjs#0.9.5
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <dom-module id="xp-grid">
 
     <style>
         :host {
+            @apply(--layout-fit);
             display: block;
-            opacity: 0.2;
+            opacity: 0.25;
             overflow: visible;
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
         }
 
         :host #xpGridWrapper {
@@ -39,56 +40,53 @@ This element is used to display a fixed or flexible grid to design your applicat
             margin: auto;
         }
 
-        :host [column] {
-            background: hsla(0, 100%, 50%, 1);
+        :host #xpGridWrapper [column] {
+            background: hsla(0, 100%, 100%, 0.75);
             height: 100%;
             float: left;
         }
 
-        :host [grid="960-12"],
-        :host [grid="960-16"] {
-            background: hsla(0, 100%, 50%, 0.5);
-            width: 960px;
+        :host:not([type="graph-paper"]) #xpGridWrapper {
+            background: hsla(0, 100%, 50%, 0.75);
         }
 
-        :host [grid="960-12"] [column] {
-            margin: 0 10px;
-            width: 60px;
-        }
-
-        :host [grid="960-16"] [column] {
-            margin: 0 10px;
-            width: 40px;
-        }
-
-        :host [grid="bootstrap-12"],
-        :host [grid="fluid-12"],
-        :host [grid="fluid-16"] {
-            background: hsla(0, 100%, 50%, 0.5);
-        }
-
-        :host [grid="bootstrap-12"] [column] {
+        :host[type="bootstrap-12"] #xpGridWrapper [column] {
             margin: 0 15px;
             width: calc(8.333% - 30px);
         }
 
-        :host [grid="fluid-12"] [column] {
-            width: calc(8.333333333% - 1.66%);
+        :host[type="fixed-12"] #xpGridWrapper,
+        :host[type="fixed-16"] #xpGridWrapper {
+            width: 960px;
+        }
+
+        :host[type="fixed-12"] #xpGridWrapper [column] {
+            margin: 0 10px;
+            width: 60px;
+        }
+
+        :host[type="fixed-16"] #xpGridWrapper [column] {
+            margin: 0 10px;
+            width: 40px;
+        }
+
+        :host[type="fluid-12"] #xpGridWrapper [column] {
             margin: 0 0.83%;
+            width: calc(8.333333333% - 1.66%);
         }
 
-        :host [grid="fluid-16"] [column] {
-            width: calc(6.25% - 1.250%);
+        :host[type="fluid-16"] #xpGridWrapper [column] {
             margin: 0 0.625%;
+            width: calc(6.25% - 1.250%);
         }
 
-        :host [grid="google"] {
+        :host[type="graph-paper"] #xpGridWrapper {
             background: url('grid.png') repeat;
         }
     </style>
 
     <template>
-        <div id="xpGridWrapper" grid$="[[type]]"></div>
+        <div id="xpGridWrapper"></div>
     </template>
 
     <script>
@@ -105,27 +103,27 @@ This element is used to display a fixed or flexible grid to design your applicat
                 /**
                  * The grid's type.
                  *
-                 * `"960-12"` creates a 960px grid with 12 columns;
-                 *
-                 * `"960-16"` creates a 960px grid with 16 columns;
-                 *
                  * `"bootstrap-12"` creates a bootstrap like grid with 12 columns;
+                 *
+                 * `"fixed-12"` creates a 960px grid with 12 columns;
+                 *
+                 * `"fixed-16"` creates a 960px grid with 16 columns;
                  *
                  * `"fluid-12"` creates a full screen grid with 12 columns;
                  *
                  * `"fluid-16"` creates a full screen grid with 16 columns;
                  *
-                 * `"google"` creates a full screen grid with divided in 4 and 8px squares;
+                 * `"graph-paper"` creates a full screen grid with divided in 4 and 8px squares;
                  *
                  * @attribute type
-                 * @type "960-12" | "960-16" | "bootstrap-12" | "fluid-12" | "fluid-16" | "google"
-                 * @default "google"
+                 * @type "bootstrap-12" | "fixed-12" | "fixed-16" | "fluid-12" | "fluid-16" | "graph-paper"
+                 * @default "graph-paper"
                  */
                 type: {
                     observer: '_typeChanged',
                     reflectToAttribute: true,
                     type: String,
-                    value: 'google'
+                    value: 'graph-paper'
                 }
             },
 
