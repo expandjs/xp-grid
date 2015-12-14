@@ -7,88 +7,92 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This element is used to display a fixed or flexible grid to design your application on.
+A custom element used to display a design grid on your application.
 
 @element xp-grid
-@description A custom element used to display a fixed or flexible grid to design your application on
-@keywords web app, html5, expandjs, web-components
+@description A custom element used to display a design grid on your application
+@keywords expandjs, web app, custom elements, web-components
 @group development
+@hot
+
 @homepage http://expandjs.com/elements/xp-grid
 @repository https://github.com/ExpandJS/xp-grid
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <dom-module id="xp-grid">
 
-    <template>
+    <template strip-whitespace>
 
         <style>
             :host {
-                @apply(--layout-fit);
+                bottom: 0;
                 display: block;
+                left: 0;
                 opacity: 0.25;
-                overflow: visible;
-                pointer-events: none;
+                pointer-events: none !important;
+                position: absolute;
+                right: 0;
+                top: 0;
                 z-index: 9999;
             }
 
-            :host #xpGridWrapper {
+            :host .wrapper {
                 height: 100%;
                 margin: auto;
             }
 
-            :host #xpGridWrapper [column] {
+            :host([type="fixed-12"]) .wrapper,
+            :host([type="fixed-16"]) .wrapper {
+                width: 960px;
+            }
+
+            :host([type="material"]) .wrapper {
+                background: url('grid.png') repeat;
+            }
+
+            :host:not([type="material"]) .wrapper {
+                background: hsla(0, 100%, 50%, 0.75);
+            }
+
+            :host .wrapper * {
                 background: hsla(0, 100%, 100%, 0.75);
                 height: 100%;
                 float: left;
             }
 
-            :host:not([type="graph-paper"]) #xpGridWrapper {
-                background: hsla(0, 100%, 50%, 0.75);
-            }
-
-            :host[type="bootstrap-12"] #xpGridWrapper [column] {
+            :host([type="bootstrap-12"]) .wrapper * {
                 margin: 0 15px;
                 width: calc(8.333% - 30px);
             }
 
-            :host[type="fixed-12"] #xpGridWrapper,
-            :host[type="fixed-16"] #xpGridWrapper {
-                width: 960px;
-            }
-
-            :host[type="fixed-12"] #xpGridWrapper [column] {
+            :host([type="fixed-12"]) .wrapper * {
                 margin: 0 10px;
                 width: 60px;
             }
 
-            :host[type="fixed-16"] #xpGridWrapper [column] {
+            :host([type="fixed-16"]) .wrapper * {
                 margin: 0 10px;
                 width: 40px;
             }
 
-            :host[type="fluid-12"] #xpGridWrapper [column] {
+            :host([type="fluid-12"]) .wrapper * {
                 margin: 0 0.83%;
                 width: calc(8.333333333% - 1.66%);
             }
 
-            :host[type="fluid-16"] #xpGridWrapper [column] {
+            :host([type="fluid-16"]) .wrapper * {
                 margin: 0 0.625%;
                 width: calc(6.25% - 1.250%);
             }
-
-            :host[type="graph-paper"] #xpGridWrapper {
-                background: url('grid.png') repeat;
-            }
         </style>
 
-        <div id="xpGridWrapper"></div>
+        <div class="wrapper"></div>
 
     </template>
 
@@ -100,8 +104,30 @@ This element is used to display a fixed or flexible grid to design your applicat
 
             /*********************************************************************/
 
+            // OBSERVERS
+            observers: [
+                '_gridChanged(type, wrapper)'
+            ],
+
             // PROPERTIES
             properties: {
+
+                /**
+                 * The number of grid's columns.
+                 *
+                 * @attribute columns
+                 * @type number
+                 * @default 0
+                 * @notifies
+                 * @readonly
+                 */
+                columns: {
+                    computed: '_computeColumns(type)',
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Number,
+                    value: 0
+                },
 
                 /**
                  * The grid's type.
@@ -116,32 +142,60 @@ This element is used to display a fixed or flexible grid to design your applicat
                  *
                  * `"fluid-16"` creates a full screen grid with 16 columns;
                  *
-                 * `"graph-paper"` creates a full screen grid with divided in 4 and 8px squares;
+                 * `"material"` creates a full screen grid with divided in 4 and 8px squares;
                  *
                  * @attribute type
-                 * @type "bootstrap-12" | "fixed-12" | "fixed-16" | "fluid-12" | "fluid-16" | "graph-paper"
-                 * @default "graph-paper"
+                 * @type "bootstrap-12" | "fixed-12" | "fixed-16" | "fluid-12" | "fluid-16" | "material"
+                 * @default "material"
                  */
                 type: {
-                    observer: '_typeChanged',
                     reflectToAttribute: true,
                     type: String,
-                    value: 'graph-paper'
+                    value: 'material'
+                },
+
+                /**
+                 * The grid's wrapper.
+                 *
+                 * @attribute wrapper
+                 * @type Element
+                 * @notifies
+                 * @readonly
+                 */
+                wrapper: {
+                    notify: true,
+                    readOnly: true
                 }
             },
 
             /*********************************************************************/
 
+            // COMPUTER
+            _computeColumns: function (type) {
+                return (type && XP.toNumber(type.slice(-2))) || 0;
+            },
+
+            /*********************************************************************/
+
             // OBSERVER
-            _typeChanged: function() {
+            _gridChanged: function() {
 
                 // Vars
                 var self    = this,
-                    columns = XP.flush(Polymer.dom(self.$.xpGridWrapper)),
-                    length  = XP.toNumber(self.type.slice(-2));
+                    wrapper = XP.flush(Polymer.dom(self.wrapper)),
+                    columns = self.columns;
 
                 // Appending
-                do { columns.appendChild(XP.createElement('div', {attributes: {column: true}})); } while (length -= 1);
+                while (columns) { columns -= wrapper.appendChild(document.createElement('div')) && 1; }
+            },
+
+            /*********************************************************************/
+
+            // LISTENER
+            ready: function () {
+
+                // Setting
+                this._setWrapper(Polymer.dom(this.root).querySelector('.wrapper'));
             }
         });
     </script>
