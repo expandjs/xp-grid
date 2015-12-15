@@ -43,6 +43,7 @@ A custom element used to display a design grid on your application.
             }
 
             :host .wrapper {
+                box-sizing: border-box;
                 height: 100%;
                 margin: auto;
             }
@@ -62,6 +63,7 @@ A custom element used to display a design grid on your application.
 
             :host .wrapper * {
                 background: hsla(0, 100%, 100%, 0.75);
+                box-sizing: border-box;
                 height: 100%;
                 float: left;
             }
